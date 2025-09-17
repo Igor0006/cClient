@@ -4,14 +4,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import lombok.RequiredArgsConstructor;
+
 @SpringBootApplication
+@RequiredArgsConstructor
 public class CclientApplication implements CommandLineRunner {
 
     private final WsListener wsListener;
-
-    public CclientApplication(WsListener wsListener) {
-        this.wsListener = wsListener;
-    }
+    private final AuthCli authCli;
+    private final AuthService authService;
 
     public static void main(String[] args) {
         SpringApplication.run(CclientApplication.class, args);
@@ -19,7 +20,10 @@ public class CclientApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        wsListener.start();
+        authCli.authenticateBlocking();
+
+        wsListener.start(authService.getJwt());
+
         System.out.println("Listening (WS)...");
         Thread.currentThread().join();
     }

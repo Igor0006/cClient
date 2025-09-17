@@ -22,7 +22,7 @@ public class WsListener {
     private final WebSocketStompClient stomp;
     private StompSession session;
 
-    public void start() throws Exception {
+    public void start(String jwt) throws Exception {
         if (session != null && session.isConnected()) return;
 
         if (!(stomp.getMessageConverter() instanceof MappingJackson2MessageConverter)) {
@@ -30,9 +30,7 @@ public class WsListener {
         }
 
         WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        if (props.getJwt() != null && !props.getJwt().isBlank()) {
-            headers.add("Authorization", "Bearer " + props.getJwt());
-        }
+        headers.add("Authorization", "Bearer " + jwt);
         if (props.getWs().getOrigin() != null) {
             headers.add("Origin", props.getWs().getOrigin());
         }
