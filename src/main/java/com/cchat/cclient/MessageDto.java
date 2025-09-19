@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MessageDto {
     Long id;
-    Long conversationId;
-    Long senderId;
+    Long conversation_id;
+    Long sender_id;
     String body;
 }

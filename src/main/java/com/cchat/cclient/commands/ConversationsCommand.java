@@ -27,9 +27,9 @@ public class ConversationsCommand implements Command {
     private final AuthService auth;
 
     @Override public String name()  { return "/conversations"; }
-    @Override public String description() { return "/conversations list — показать беседы"; }
+    @Override public String description() { return "/conversations - show conversations"; }
 
-    public record ConversationDto(String title, boolean unread) {}
+    public record ConversationDto(Long id, String title, boolean unread) {}
 
     public List<ConversationDto> list() throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
@@ -53,8 +53,8 @@ public class ConversationsCommand implements Command {
             return;
         }
         list.forEach(c ->
-                System.out.printf("- # %s %s%n",
-                        c.title(), c.unread() ? "[unread]" : ""));
+                System.out.printf("(%d) %s %s%n",
+                        c.id(), c.title(), c.unread() ? "[unread]" : ""));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
