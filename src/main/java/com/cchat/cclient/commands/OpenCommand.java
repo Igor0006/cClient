@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
+import com.cchat.cclient.ClientState;
 import com.cchat.cclient.MessageDto;
 import com.cchat.cclient.commands.ConversationsCommand.ConversationDto;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +26,7 @@ public class OpenCommand implements Command {
     private final ObjectMapper om;
     private final CliProperties props;
     private final AuthService auth;
+    private final ClientState clientState;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
 
@@ -49,10 +51,11 @@ public class OpenCommand implements Command {
     public void execute(String[] args) throws RuntimeException {
         try {
             var list  = list(args[0]);
+            clientState.setCurrentConversationId(Long.valueOf(args[0]));
             list.forEach(c ->
                 System.out.println(c));   
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Wrong input " + e.getMessage());
         }
     }
     

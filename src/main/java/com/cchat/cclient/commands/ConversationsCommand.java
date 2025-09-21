@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
+import com.cchat.cclient.ClientState;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -25,6 +26,7 @@ public class ConversationsCommand implements Command {
     private final ObjectMapper om;
     private final com.cchat.cclient.CliProperties props;
     private final AuthService auth;
+    private final ClientState clientState;
 
     @Override public String name()  { return "/conversations"; }
     @Override public String description() { return "/conversations - show conversations"; }
@@ -46,6 +48,7 @@ public class ConversationsCommand implements Command {
 
     @Override
     public void execute(String[] args) throws RuntimeException {
+        clientState.resetCurrentConversation();
         try {
             var list = list();
         if (list.isEmpty()) {
