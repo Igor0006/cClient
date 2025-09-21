@@ -26,6 +26,7 @@ public class CclientApplication implements CommandLineRunner {
         authCli.authenticateBlocking();
 
         wsListener.start(authService.getJwt());
+        // wsListener.subListUpdates();
 
         System.out.println("Listening (WS)...");
 
