@@ -2,6 +2,8 @@ package com.cchat.cclient;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -9,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.messaging.simp.stomp.StompSession.Subscription;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -23,6 +26,8 @@ public class WsListener {
     private final CliProperties props;
     private final WebSocketStompClient stomp;
     private final ConversationsCommand convCommand;
+
+    private List<Subscription> subList = new ArrayList<Subscription>();
 
     private StompSession session;
 
@@ -54,24 +59,6 @@ public class WsListener {
         headers.add("Sec-WebSocket-Protocol", "v12.stomp");
 
         session = stomp.connect(url, headers, connectHeaders, new StompSessionHandlerAdapter() {
-            @Override public void afterConnected(StompSession s, StompHeaders ch) {
-                String configuredDest = props.getWs().getDest();
-                if (configuredDest == null || configuredDest.isBlank()) {
-                    throw new IllegalStateException("client.ws.dest is not configured");
-                }
-
-                for (String dest : resolveDestinations(configuredDest)) {
-                    System.out.println("Subscribing to STOMP destination " + dest);
-                    s.subscribe(dest, new StompFrameHandler() {
-                        @Override public Type getPayloadType(StompHeaders headers) { return MessageDto.class; }
-                        @Override public void handleFrame(StompHeaders headers, Object payload) {
-                            MessageDto msg = (MessageDto) payload;
-                            System.out.printf("[%s] WS %s%n", Instant.now(), msg);
-                            convCommand.execute(null);
-                        }
-                    });
-                }
-            }
             @Override public void handleTransportError(StompSession s, Throwable ex) {
                 System.err.println("WS transport error: " + ex.getMessage());
             }
@@ -81,27 +68,28 @@ public class WsListener {
         }).get();
     }
 
-    private java.util.List<String> resolveDestinations(String configured) {
-        String normalized = configured.trim();
-        if (normalized.isEmpty()) {
-            return java.util.List.of();
-        }
+    private void cleanSubs() {
+        for (var s: subList) {s.unsubscribe();}
+    }
 
-        if (normalized.startsWith("/user/")) {
-            return java.util.List.of(normalized);
-        }
+    public void subListUpdates() {
+        cleanSubs();
+        subList.add(session.subscribe("/user/queue/messages", new StompFrameHandler() {
+            @Override public Type getPayloadType(StompHeaders headers) { return MessageDto.class; }
+            @Override public void handleFrame(StompHeaders headers, Object payload) {
+                convCommand.execute(null);
+            }
+        }));
+    }
 
-        String withoutSlashes = normalized.replaceFirst("^/+", "");
-        String userVariant = "/user/" + withoutSlashes;
-
-        if (normalized.equals(userVariant)) {
-            return java.util.List.of(normalized);
-        }
-
-        if (normalized.startsWith("/")) {
-            return java.util.List.of(normalized, userVariant);
-        }
-
-        return java.util.List.of("/" + normalized, userVariant);
+    public void subMessages(Long conversationId) {
+        cleanSubs();
+        subList.add(session.subscribe("/user/queue/messages" + conversationId, new StompFrameHandler() {
+            @Override public Type getPayloadType(StompHeaders headers) { return MessageDto.class; }
+            @Override public void handleFrame(StompHeaders headers, Object payload) {
+                MessageDto msg = (MessageDto) payload;
+                System.out.printf("[%s] WS %s%n", Instant.now(), msg);
+            }
+        }));
     }
 }
