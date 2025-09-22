@@ -1,16 +1,21 @@
 package com.cchat.cclient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +68,19 @@ public class AuthService {
         JwtResponse jwtResp = om.readValue(resp.body(), JwtResponse.class);
         jwt = jwtResp.getToken();
         return jwtResp;
+    }
+    
+    public Long extractUserIdFromJwt() {
+        try {
+            String[] parts = jwt.split("\\.");
+            String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+            JsonNode payload = om.readTree(payloadJson);
+            if (!payload.has("uid"))
+                throw new IllegalStateException("JWT has no uid");
+            return payload.get("uid").asLong();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse JWT payload", e);
+        }
     }
 
     @Data

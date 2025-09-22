@@ -47,7 +47,7 @@ public class ConversationsCommand implements Command {
     }
 
     @Override
-    public void execute(String[] args) throws RuntimeException {
+    public void execute(String[] args) {
         clientState.resetCurrentConversation();
         try {
             var list = list();

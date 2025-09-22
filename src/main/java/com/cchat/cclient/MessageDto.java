@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class MessageDto {
-    Long id;
-    Long conversation_id;
-    Long sender_id;
-    String body;
+    private String body;
+    private Long senderId;
+    private Long destinationId;
+    private String type;
 }

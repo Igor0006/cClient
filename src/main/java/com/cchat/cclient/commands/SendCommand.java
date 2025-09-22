@@ -1,5 +1,6 @@
 package com.cchat.cclient.commands;
 
+import java.net.Authenticator;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -20,41 +21,39 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class OpenCommand implements Command {
-    private final ObjectMapper om;
+public class SendCommand implements Command {
+        private final ObjectMapper om;
     private final CliProperties props;
     private final AuthService auth;
     private final ClientState clientState;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
 
-    @Override public String name() {return "/open";}
+    @Override public String name() {return "/send";}
 
-    @Override public String description() {return "/open {conversation_id} - open conversation"; }
+    @Override public String description() {return "Send message in current conversation.";}
 
-    public List<MessageDto> list(String arg) throws Exception {
+    @Override
+    public void execute(String[] args) throws Exception{
+        MessageDto dto = new MessageDto();
+        dto.setBody(String.join(" ", args));
+        dto.setSenderId(auth.extractUserIdFromJwt());
+        dto.setDestinationId(clientState.getCurrentConversationId());
+
+        String json = om.writeValueAsString(dto);
+        
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(props.getApi().getReceive() + "/chat/" + arg))
-                .timeout(Duration.ofSeconds(10))
+                .uri(URI.create(props.getApi().getIngress() + "/send"))
+                .timeout(Duration.ofSeconds(1))
                 .header("Authorization", "Bearer " + auth.getJwt())
-                .GET().build();
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json)).build();
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
         if (resp.statusCode() != 200) {
             throw new RuntimeException("Failed: " + resp.statusCode() + " " + resp.body());
         }
-        return om.readValue(resp.body(), new TypeReference<List<MessageDto>>() {});
-    }
-
-    @Override
-    public void execute(String[] args) {
-        try {
-            var list  = list(args[0]);
-            clientState.setCurrentConversationId(Long.valueOf(args[0]));
-            list.forEach(c ->
-                System.out.println(c));   
-        } catch (Exception e) {
-            System.out.println("Wrong input " + e.getMessage());
-        }
+        System.out.println(resp);
     }
     
 }
+
