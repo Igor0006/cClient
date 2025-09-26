@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import com.cchat.cclient.commands.ConversationsCommand;
+import com.cchat.cclient.model.ConversationResetEvent;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WsListener {
     private final CliProperties props;
     private final WebSocketStompClient stomp;
-    private final ConversationsCommand convCommand;
-
+    private final ApplicationEventPublisher events;
     private List<Subscription> subList = new ArrayList<Subscription>();
 
     private StompSession session;
@@ -76,10 +76,11 @@ public class WsListener {
 
     public void subListUpdates() {
         cleanSubs();
-        subList.add(session.subscribe("/user/queue/messages", new StompFrameHandler() {
+        subList.add(session.subscribe("/topic/ping", new StompFrameHandler() {
             @Override public Type getPayloadType(StompHeaders headers) { return MessageDto.class; }
             @Override public void handleFrame(StompHeaders headers, Object payload) {
-                convCommand.execute(null);
+                log.info("Message from WS subListUpdates subscription.");
+                events.publishEvent(new ConversationResetEvent());
             }
         }));
         log.info("Listening all chats.");
@@ -94,6 +95,6 @@ public class WsListener {
                 System.out.printf("[%s] WS %s%n", Instant.now(), msg);
             }
         }));
-        log.info("Listening current chat messages.");
+        log.info("Listening current chat messages of id: " + conversationId);
     }
 }

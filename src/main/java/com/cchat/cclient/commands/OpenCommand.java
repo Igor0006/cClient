@@ -7,12 +7,14 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
 import com.cchat.cclient.ClientState;
 import com.cchat.cclient.MessageDto;
+import com.cchat.cclient.model.ConversationSelectedEvent;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class OpenCommand implements Command {
+    private final ApplicationEventPublisher events;
+
+        
     private final ObjectMapper om;
     private final CliProperties props;
     private final AuthService auth;
@@ -49,7 +54,7 @@ public class OpenCommand implements Command {
     public void execute(String[] args) {
         try {
             var list  = list(args[0]);
-            clientState.setCurrentConversationId(Long.valueOf(args[0]));
+            events.publishEvent(new ConversationSelectedEvent(Long.valueOf(args[0])));
             list.forEach(c ->
                 System.out.println(c));   
         } catch (Exception e) {
