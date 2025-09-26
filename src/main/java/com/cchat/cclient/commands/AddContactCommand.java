@@ -20,39 +20,32 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SendCommand implements Command {
-    private final ObjectMapper om;
+public class AddContactCommand implements Command {
     private final CliProperties props;
     private final AuthService auth;
-    private final ClientState clientState;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
 
-    @Override public String name() {return "/send";}
 
-    @Override public String description() {return "Send message in current conversation.";}
+    @Override public String name() {return "/addContact";}
+
+    @Override public String description() {
+        return "/addCommand {userName} = add user with followed username to your conversations";}
 
     @Override
     public void execute(String[] args) throws Exception {
-        MessageDto dto = new MessageDto();
-        dto.setBody(String.join(" ", args));
-        dto.setSenderId(auth.extractUserIdFromJwt());
-        dto.setDestinationId(clientState.getCurrentConversationId());
-
-        String json = om.writeValueAsString(dto);
+        String contact = args[0];
 
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(props.getApi().getIngress() + "/send"))
+                .uri(URI.create(props.getApi().getReceive() + "/addContact"))
                 .timeout(Duration.ofSeconds(1))
                 .header("Authorization", "Bearer " + auth.getJwt())
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json)).build();
+                .header("Content-Type", "text/plain")
+                .POST(HttpRequest.BodyPublishers.ofString(contact)).build();
         HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
         if (resp.statusCode() != 200) {
             throw new RuntimeException("Failed: " + resp.statusCode() + " " + resp.body());
         }
         log.info(resp.toString());
     }
-    
 }
-
