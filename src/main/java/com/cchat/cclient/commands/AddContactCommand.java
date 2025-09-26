@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
-import com.cchat.cclient.ClientState;
-import com.cchat.cclient.MessageDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.cchat.cclient.commands.CommandLoop;
+import com.cchat.cclient.commands.ConversationsCommand;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,7 @@ public class CclientApplication implements CommandLineRunner {
     private final AuthCli authCli;
     private final AuthService authService;
     private final CommandLoop commandLoop;
+    private final ConversationsCommand convCommand;
 
     public static void main(String[] args) {
         SpringApplication.run(CclientApplication.class, args);
@@ -27,10 +29,9 @@ public class CclientApplication implements CommandLineRunner {
 
         wsListener.start(authService.getJwt());
         wsListener.subListUpdates();
-        wsListener.subMessages(3L);
-
-        System.out.println("Listening (WS)...");
-
+        // wsListener.subMessages(3L);
+        
+        convCommand.execute(null);
         commandLoop.run();
         Thread.currentThread().join();
     }

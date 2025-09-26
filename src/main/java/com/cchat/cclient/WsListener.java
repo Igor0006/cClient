@@ -19,8 +19,10 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import com.cchat.cclient.commands.ConversationsCommand;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class WsListener {
     private final CliProperties props;
@@ -60,10 +62,10 @@ public class WsListener {
 
         session = stomp.connect(url, headers, connectHeaders, new StompSessionHandlerAdapter() {
             @Override public void handleTransportError(StompSession s, Throwable ex) {
-                System.err.println("WS transport error: " + ex.getMessage());
+                log.error("WS transport error: " + ex.getMessage());
             }
             @Override public void handleException(StompSession s, StompCommand c, StompHeaders h, byte[] p, Throwable ex) {
-                System.err.println("WS STOMP error: " + ex.getMessage());
+                log.error("WS STOMP error: " + ex.getMessage());
             }
         }).get();
     }
@@ -80,6 +82,7 @@ public class WsListener {
                 convCommand.execute(null);
             }
         }));
+        log.info("Listening all chats.");
     }
 
     public void subMessages(Long conversationId) {
@@ -91,5 +94,6 @@ public class WsListener {
                 System.out.printf("[%s] WS %s%n", Instant.now(), msg);
             }
         }));
+        log.info("Listening current chat messages.");
     }
 }
