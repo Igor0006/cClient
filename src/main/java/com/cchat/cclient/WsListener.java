@@ -1,6 +1,7 @@
 package com.cchat.cclient;
 
 import java.lang.reflect.Type;
+import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class WsListener {
 
     public void subListUpdates() {
         cleanSubs();
-        subList.add(session.subscribe("/topic/ping", new StompFrameHandler() {
+        subList.add(session.subscribe("/user/queue/update", new StompFrameHandler() {
             @Override public Type getPayloadType(StompHeaders headers) { return MessageDto.class; }
             @Override public void handleFrame(StompHeaders headers, Object payload) {
                 log.info("Message from WS subListUpdates subscription.");
