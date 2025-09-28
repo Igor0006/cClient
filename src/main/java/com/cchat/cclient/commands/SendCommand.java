@@ -6,6 +6,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+import javax.management.InvalidAttributeValueException;
+
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
@@ -30,10 +32,13 @@ public class SendCommand implements Command {
 
     @Override public String name() {return "/send";}
 
-    @Override public String description() {return "Send message in current conversation.";}
+    @Override public String description() {return "/send - send message in currently opened chat";}
 
     @Override
     public void execute(String[] args) throws Exception {
+        if (clientState.getCurrentConversationId() < 0) {
+            throw new InvalidAttributeValueException();
+        }
         MessageDto dto = new MessageDto();
         dto.setBody(String.join(" ", args));
         dto.setSenderId(auth.extractUserIdFromJwt());

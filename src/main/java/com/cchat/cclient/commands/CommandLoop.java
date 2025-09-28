@@ -2,6 +2,8 @@ package com.cchat.cclient.commands;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -9,6 +11,7 @@ import java.util.Scanner;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class CommandLoop {
     private final CommandRegistry registry;
 
@@ -26,7 +29,8 @@ public class CommandLoop {
                 try {
                     cmd.execute(args);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    log.info("Error " + e.getMessage());
+                    System.out.println("Wrong command args or usage. Use /help");
                 }
             }, () -> System.out.println("Unknown command. Use /help"));
         }

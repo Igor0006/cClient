@@ -35,7 +35,7 @@ public class OpenCommand implements Command {
 
     @Override public String name() {return "/open";}
 
-    @Override public String description() {return "/open {conversation_id} - open conversation"; }
+    @Override public String description() {return "/open <conversation_id> - open a dialog under the specified id"; }
 
     public List<MessageDto> list(String arg) throws Exception {
         HttpRequest req = HttpRequest.newBuilder()

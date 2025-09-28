@@ -30,7 +30,7 @@ public class ConversationsCommand implements Command {
     private final AuthService auth;
 
     @Override public String name()  { return "/conversations"; }
-    @Override public String description() { return "/conversations - show conversations"; }
+    @Override public String description() { return "/conversations - show your conversations"; }
 
     public record ConversationDto(Long id, String title, boolean unread) {}
 

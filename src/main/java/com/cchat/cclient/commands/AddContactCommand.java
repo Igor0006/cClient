@@ -27,7 +27,7 @@ public class AddContactCommand implements Command {
     @Override public String name() {return "/addContact";}
 
     @Override public String description() {
-        return "/addCommand {userName} = add user with followed username to your conversations";}
+        return "/addContact <userName> - add user with followed username to your conversations";}
 
     @Override
     public void execute(String[] args) throws Exception {
