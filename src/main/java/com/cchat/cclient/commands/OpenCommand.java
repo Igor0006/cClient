@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
 import com.cchat.cclient.ClientState;
-import com.cchat.cclient.MessageDto;
 import com.cchat.cclient.model.ConversationSelectedEvent;
+import com.cchat.cclient.model.MessageDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +30,6 @@ public class OpenCommand implements Command {
     private final ObjectMapper om;
     private final CliProperties props;
     private final AuthService auth;
-    private final ClientState clientState;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
 

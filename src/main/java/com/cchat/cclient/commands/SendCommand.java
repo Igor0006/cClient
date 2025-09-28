@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
 import com.cchat.cclient.ClientState;
-import com.cchat.cclient.MessageDto;
+import com.cchat.cclient.model.MessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -41,8 +41,8 @@ public class SendCommand implements Command {
         }
         MessageDto dto = new MessageDto();
         dto.setBody(String.join(" ", args));
-        dto.setSenderId(auth.extractUserIdFromJwt());
-        dto.setDestinationId(clientState.getCurrentConversationId());
+        dto.setSender_id(auth.extractUserIdFromJwt());
+        dto.setConversation_id(clientState.getCurrentConversationId());
 
         String json = om.writeValueAsString(dto);
 
