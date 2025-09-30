@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
+import com.cchat.cclient.model.Clean;
 import com.cchat.cclient.model.ConversationResetEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +48,7 @@ public class ConversationsCommand implements Command {
         return om.readValue(resp.body(), new TypeReference<List<ConversationDto>>() {});
     }
     
+    @Clean
     public void getChats() {
         try {
             var list = list();
