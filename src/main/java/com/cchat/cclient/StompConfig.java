@@ -2,6 +2,9 @@ package com.cchat.cclient;
 
 import java.util.concurrent.Executors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -15,8 +18,16 @@ public class StompConfig {
     @Bean
     public WebSocketStompClient stompClient() {
         WebSocketStompClient stomp = new WebSocketStompClient(new StandardWebSocketClient());
-        stomp.setMessageConverter(new MappingJackson2MessageConverter());
-        stomp.setDefaultHeartbeat(new long[]{10_000, 10_000});
+
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setObjectMapper(mapper);
+        stomp.setMessageConverter(converter);
+
+        stomp.setDefaultHeartbeat(new long[] { 10_000, 10_000 });
         stomp.setTaskScheduler(new ConcurrentTaskScheduler(Executors.newScheduledThreadPool(1)));
         return stomp;
     }

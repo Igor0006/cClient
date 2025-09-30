@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
 import com.cchat.cclient.CliProperties;
-import com.cchat.cclient.ClientState;
 import com.cchat.cclient.model.ConversationSelectedEvent;
 import com.cchat.cclient.model.MessageDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.RequiredArgsConstructor;
 

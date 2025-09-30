@@ -1,7 +1,6 @@
 package com.cchat.cclient;
 
 import java.lang.reflect.Type;
-import java.security.Principal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +94,7 @@ public class WsListener {
             @Override public void handleFrame(StompHeaders headers, Object payload) {
                 MessageDto msg = (MessageDto) payload;
                 System.out.printf("[%s] WS %s%n", Instant.now(), msg);
+                session.send("/chat/" + conversationId + "/read", null);
             }
         }));
         log.info("Listening current chat messages of id: " + conversationId);
