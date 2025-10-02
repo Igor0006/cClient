@@ -10,11 +10,11 @@ import javax.management.InvalidAttributeValueException;
 
 import org.springframework.stereotype.Component;
 
-import com.cchat.cclient.AuthService;
-import com.cchat.cclient.BubblePrinter;
-import com.cchat.cclient.CliProperties;
 import com.cchat.cclient.ClientState;
+import com.cchat.cclient.config.CliProperties;
 import com.cchat.cclient.model.MessageDto;
+import com.cchat.cclient.services.AuthService;
+import com.cchat.cclient.services.BubblePrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;

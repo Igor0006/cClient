@@ -1,5 +1,6 @@
-package com.cchat.cclient;
+package com.cchat.cclient.services;
 
+import com.cchat.cclient.config.CliProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;

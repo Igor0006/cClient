@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.cchat.cclient.commands.AuthCli;
 import com.cchat.cclient.commands.CommandLoop;
 import com.cchat.cclient.commands.ConversationsCommand;
+import com.cchat.cclient.services.AuthService;
 
 import lombok.RequiredArgsConstructor;
 

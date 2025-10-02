@@ -3,7 +3,7 @@ package com.cchat.cclient.commands;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import com.cchat.cclient.AuthService;
+import com.cchat.cclient.services.AuthService;
 
 import java.util.Scanner;
 

@@ -1,4 +1,4 @@
-package com.cchat.cclient;
+package com.cchat.cclient.config;
 
 import java.util.concurrent.Executors;
 

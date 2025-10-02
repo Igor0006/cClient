@@ -8,8 +8,8 @@ import java.time.Duration;
 
 import org.springframework.stereotype.Component;
 
-import com.cchat.cclient.AuthService;
-import com.cchat.cclient.CliProperties;
+import com.cchat.cclient.config.CliProperties;
+import com.cchat.cclient.services.AuthService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

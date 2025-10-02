@@ -1,4 +1,4 @@
-package com.cchat.cclient;
+package com.cchat.cclient.services;
 
 import com.cchat.cclient.model.MessageDto;
 

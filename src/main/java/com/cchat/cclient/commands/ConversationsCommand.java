@@ -14,9 +14,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import com.cchat.cclient.AuthService;
 import com.cchat.cclient.model.Clean;
 import com.cchat.cclient.model.ConversationResetEvent;
+import com.cchat.cclient.services.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -27,7 +27,7 @@ public class ConversationsCommand implements Command {
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
     private final ObjectMapper om;
-    private final com.cchat.cclient.CliProperties props;
+    private final com.cchat.cclient.config.CliProperties props;
     private final AuthService auth;
 
     @Override public String name()  { return "/conversations"; }

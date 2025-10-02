@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import com.cchat.cclient.config.CliProperties;
 import com.cchat.cclient.model.ConversationResetEvent;
 import com.cchat.cclient.model.MessageDto;
 
