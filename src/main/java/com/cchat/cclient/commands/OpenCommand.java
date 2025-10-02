@@ -11,7 +11,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
+import com.cchat.cclient.BubblePrinter;
 import com.cchat.cclient.CliProperties;
+import com.cchat.cclient.ClientState;
+import com.cchat.cclient.model.Clean;
 import com.cchat.cclient.model.ConversationSelectedEvent;
 import com.cchat.cclient.model.MessageDto;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,8 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class OpenCommand implements Command {
     private final ApplicationEventPublisher events;
 
-        
     private final ObjectMapper om;
+    private final BubblePrinter bubblePrinter;
     private final CliProperties props;
     private final AuthService auth;
     private final HttpClient http = HttpClient.newBuilder()
@@ -49,12 +52,13 @@ public class OpenCommand implements Command {
     }
 
     @Override
+    @Clean
     public void execute(String[] args) {
         try {
             var list  = list(args[0]);
             events.publishEvent(new ConversationSelectedEvent(Long.valueOf(args[0])));
             list.forEach(c ->
-                System.out.println(c));   
+                bubblePrinter.print(c, auth.extractUserIdFromJwt()));   
         } catch (Exception e) {
             System.out.println("Wrong input " + e.getMessage());
         }

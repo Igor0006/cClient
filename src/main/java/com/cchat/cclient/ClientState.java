@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 public class ClientState {
     private final WsListener listener;
     private final ConversationsCommand convCommand;
+    
+    private Long selfId;
     private Long currentConversationId = -1L;
 
     public Long getCurrentConversationId() {

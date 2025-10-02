@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.cchat.cclient.commands.AuthCli;
 import com.cchat.cclient.commands.CommandLoop;
 import com.cchat.cclient.commands.ConversationsCommand;
 
