@@ -11,6 +11,7 @@ import javax.management.InvalidAttributeValueException;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.AuthService;
+import com.cchat.cclient.BubblePrinter;
 import com.cchat.cclient.CliProperties;
 import com.cchat.cclient.ClientState;
 import com.cchat.cclient.model.MessageDto;
@@ -29,6 +30,7 @@ public class SendCommand implements Command {
     private final ClientState clientState;
     private final HttpClient http = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5)).build();
+    private final BubblePrinter bubblePrinter;
 
     @Override public String name() {return "/send";}
 
@@ -39,13 +41,13 @@ public class SendCommand implements Command {
         if (clientState.getCurrentConversationId() < 0) {
             throw new InvalidAttributeValueException();
         }
-        MessageDto dto = new MessageDto();
-        dto.setBody(String.join(" ", args));
-        dto.setSender_id(auth.extractUserIdFromJwt());
-        dto.setConversation_id(clientState.getCurrentConversationId());
+        MessageDto message = new MessageDto();
+        message.setBody(String.join(" ", args));
+        message.setSender_id(auth.extractUserIdFromJwt());
+        message.setConversation_id(clientState.getCurrentConversationId());
 
-        String json = om.writeValueAsString(dto);
-
+        String json = om.writeValueAsString(message);
+        
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(props.getApi().getIngress() + "/send"))
                 .timeout(Duration.ofSeconds(1))
@@ -56,6 +58,7 @@ public class SendCommand implements Command {
         if (resp.statusCode() != 200) {
             throw new RuntimeException("Failed: " + resp.statusCode() + " " + resp.body());
         }
+        bubblePrinter.print(message, auth.extractUserIdFromJwt());
         log.info(resp.toString());
     }
     

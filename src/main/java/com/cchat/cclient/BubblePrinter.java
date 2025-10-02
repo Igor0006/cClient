@@ -2,6 +2,7 @@ package com.cchat.cclient;
 
 import com.cchat.cclient.model.MessageDto;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public final class BubblePrinter {
         String pad = " ".repeat(mine ? Math.max(0, w - (boxWidth + 4)) : 2);
 
         String who = mine ? "me" : String.valueOf(m.getSender_id());
-        String time = (m.getCreatedAt() != null) ? HHMM.format(m.getCreatedAt()) : null;
+        String time = (m.getCreatedAt() != null) ? HHMM.format(m.getCreatedAt()) : HHMM.format(Instant.now());
         String header = (time == null) ? who : (who + " [" + time + "]");
 
         System.out.println();
