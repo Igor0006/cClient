@@ -10,9 +10,11 @@ import java.util.List;
 
 import javax.management.InvalidAttributeValueException;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import com.cchat.cclient.config.CliProperties;
+import com.cchat.cclient.model.ConversationResetEvent;
 import com.cchat.cclient.services.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CreateGroupCommand implements Command{
+    private final ApplicationEventPublisher events;
     private final CliProperties props;
     private final AuthService auth;
     private final HttpClient http = HttpClient.newBuilder()
@@ -31,7 +34,7 @@ public class CreateGroupCommand implements Command{
     @Override public String name() {return "/createGroup"; }
 
     @Override
-    public String description() { return "/createGroup <GroupName> <id1> <id2> ... - create a group and add users with corresponding IDs in it"; }
+    public String description() { return "/createGroup <GroupName> <userName1> <userName2> ... - create a group and add users with corresponding names in it"; }
 
     @Override
     public void execute(String[] args) throws Exception {
@@ -39,9 +42,9 @@ public class CreateGroupCommand implements Command{
             throw new InvalidAttributeValueException();
         }
         
-        List<Long> userIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         for (int i = 1; i < args.length; i++) {
-            userIds.add(Long.parseLong(args[i]));
+            userIds.add(args[i]);
         }
 
         String body = new ObjectMapper().writeValueAsString(userIds);
@@ -57,6 +60,7 @@ public class CreateGroupCommand implements Command{
             throw new RuntimeException("Failed: " + resp.statusCode() + " " + resp.body());
         }
         log.info("Group created: {}", resp.toString());
+        events.publishEvent(new ConversationResetEvent());
     }
     
 }
